@@ -20,7 +20,7 @@
         <allure.version>2.35.4</allure.version>
         <allure.maven.version>3.0.3</allure.maven.version>
         <surefire.version>3.6.0</surefire.version>
-        <suiteXmlFile>testng.xml</suiteXmlFile>
+        <test.groups>ui-regression</test.groups>
     </properties>
 
     <dependencies>
@@ -66,9 +66,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
-                    </suiteXmlFiles>
+                    <groups>${test.groups}</groups>
                     <trimStackTrace>false</trimStackTrace>
                     <failIfNoTests>true</failIfNoTests>
                     <systemPropertyVariables>
