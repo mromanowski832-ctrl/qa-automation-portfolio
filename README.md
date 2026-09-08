@@ -1,5 +1,7 @@
 # QA Automation Portfolio — Selenium · Java · TestNG
 
+[![QA Automation](https://github.com/mromanowski832-ctrl/qa-automation-portfolio/actions/workflows/qa.yml/badge.svg?branch=main)](https://github.com/mromanowski832-ctrl/qa-automation-portfolio/actions/workflows/qa.yml)
+
 Production-style UI test automation project built around a real e-commerce workflow.
 
 The goal is not to demonstrate isolated WebDriver commands. The repository demonstrates how a maintainable QA automation framework can be structured: deterministic setup, explicit waits, Page Object Model, parallel-safe driver lifecycle, CI execution, failure evidence and optional BrowserStack execution.
