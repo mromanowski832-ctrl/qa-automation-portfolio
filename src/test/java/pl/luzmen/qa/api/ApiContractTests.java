@@ -14,7 +14,7 @@ public final class ApiContractTests {
     private static final String BASE_URL = "https://jsonplaceholder.typicode.com";
 
     @Test(
-            groups = {"api", "smoke", "regression"},
+            groups = {"api", "api-smoke", "api-regression"},
             description = "Single post endpoint returns the expected HTTP and JSON contract"
     )
     public void singlePostContractIsStable() {
@@ -33,7 +33,7 @@ public final class ApiContractTests {
     }
 
     @Test(
-            groups = {"api", "regression"},
+            groups = {"api", "api-regression"},
             description = "Post filtering returns a non-empty collection for a known user"
     )
     public void postsCanBeFilteredByUser() {
