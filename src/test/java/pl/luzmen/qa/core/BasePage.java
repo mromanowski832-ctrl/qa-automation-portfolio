@@ -13,7 +13,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.function.Function;
 
 public abstract class BasePage {
 
@@ -72,9 +71,5 @@ public abstract class BasePage {
 
     protected void waitUntil(ExpectedCondition<?> condition) {
         wait.until(condition);
-    }
-
-    protected <T> T waitUntil(Function<WebDriver, T> condition) {
-        return wait.until(condition);
     }
 }
