@@ -1,5 +1,6 @@
 package pl.luzmen.qa.listeners;
 
+import io.qameta.allure.Allure;
 import pl.luzmen.qa.config.TestConfig;
 import pl.luzmen.qa.driver.DriverManager;
 import org.openqa.selenium.JavascriptExecutor;
@@ -9,10 +10,10 @@ import org.openqa.selenium.WebDriver;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -28,7 +29,7 @@ public final class TestListener implements ITestListener {
 
     @Override
     public void onTestFailure(ITestResult result) {
-        captureScreenshot(result);
+        captureFailureEvidence(result);
 
         String reason = result.getThrowable() == null
                 ? "Test failed"
@@ -37,7 +38,7 @@ public final class TestListener implements ITestListener {
         markBrowserStackSession("failed", reason);
     }
 
-    private void captureScreenshot(ITestResult result) {
+    private void captureFailureEvidence(ITestResult result) {
         if (!DriverManager.hasDriver()) {
             return;
         }
@@ -52,11 +53,25 @@ public final class TestListener implements ITestListener {
         Path destination = Path.of("screenshots", fileName);
 
         try {
+            byte[] screenshot = screenshotDriver.getScreenshotAs(OutputType.BYTES);
             Files.createDirectories(destination.getParent());
-            Path source = screenshotDriver.getScreenshotAs(OutputType.FILE).toPath();
-            Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException exception) {
+            Files.write(destination, screenshot);
+            attachToAllure(safeName, screenshot);
+        } catch (IOException | RuntimeException exception) {
             System.err.println("Unable to save failure screenshot: " + exception.getMessage());
+        }
+    }
+
+    private void attachToAllure(String testName, byte[] screenshot) {
+        try {
+            Allure.addAttachment(
+                    "Failure screenshot - " + testName,
+                    "image/png",
+                    new ByteArrayInputStream(screenshot),
+                    ".png"
+            );
+        } catch (RuntimeException exception) {
+            System.err.println("Unable to attach screenshot to Allure: " + exception.getMessage());
         }
     }
 
