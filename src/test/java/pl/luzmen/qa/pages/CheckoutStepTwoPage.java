@@ -3,6 +3,7 @@ package pl.luzmen.qa.pages;
 import pl.luzmen.qa.core.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public final class CheckoutStepTwoPage extends BasePage {
 
@@ -15,9 +16,8 @@ public final class CheckoutStepTwoPage extends BasePage {
     }
 
     public CheckoutStepTwoPage assertLoaded() {
-        if (!"Checkout: Overview".equals(text(TITLE))) {
-            throw new IllegalStateException("Checkout overview did not load correctly.");
-        }
+        waitUntil(ExpectedConditions.urlContains("checkout-step-two"));
+        waitUntil(ExpectedConditions.textToBe(TITLE, "Checkout: Overview"));
         return this;
     }
 
