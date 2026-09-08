@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 public final class PurchaseFlowTests extends BaseTest {
 
     @Test(
-            groups = {"smoke", "regression"},
+            groups = {"ui", "ui-smoke", "ui-regression"},
             description = "Standard user can complete an end-to-end purchase"
     )
     public void userCanCompletePurchase() {
