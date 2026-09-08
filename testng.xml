@@ -11,6 +11,11 @@
     </listeners>
 
     <test name="SauceDemo Regression">
+        <groups>
+            <run>
+                <include name="regression"/>
+            </run>
+        </groups>
         <classes>
             <class name="pl.luzmen.qa.tests.LoginTests"/>
             <class name="pl.luzmen.qa.tests.InventoryTests"/>
