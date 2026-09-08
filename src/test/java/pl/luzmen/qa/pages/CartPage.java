@@ -3,6 +3,7 @@ package pl.luzmen.qa.pages;
 import pl.luzmen.qa.core.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 
@@ -18,9 +19,8 @@ public final class CartPage extends BasePage {
     }
 
     public CartPage assertLoaded() {
-        if (!"Your Cart".equals(text(TITLE))) {
-            throw new IllegalStateException("Cart page did not load correctly.");
-        }
+        waitUntil(ExpectedConditions.urlContains("cart"));
+        waitUntil(ExpectedConditions.textToBe(TITLE, "Your Cart"));
         return this;
     }
 
