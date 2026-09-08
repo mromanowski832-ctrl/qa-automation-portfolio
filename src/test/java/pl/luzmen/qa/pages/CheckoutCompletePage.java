@@ -3,6 +3,7 @@ package pl.luzmen.qa.pages;
 import pl.luzmen.qa.core.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public final class CheckoutCompletePage extends BasePage {
 
@@ -14,9 +15,9 @@ public final class CheckoutCompletePage extends BasePage {
     }
 
     public CheckoutCompletePage assertLoaded() {
-        if (!"Checkout: Complete!".equals(text(TITLE))) {
-            throw new IllegalStateException("Checkout completion page did not load correctly.");
-        }
+        waitUntil(ExpectedConditions.urlContains("checkout-complete"));
+        waitUntil(ExpectedConditions.textToBe(TITLE, "Checkout: Complete!"));
+        visible(COMPLETE_HEADER);
         return this;
     }
 
