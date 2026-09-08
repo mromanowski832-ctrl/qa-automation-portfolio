@@ -54,14 +54,16 @@ public final class InventoryPage extends BasePage {
     }
 
     public InventoryPage addBackpack() {
-        click(ADD_BACKPACK);
+        jsClick(ADD_BACKPACK);
         visible(REMOVE_BACKPACK);
+        waitUntil(ExpectedConditions.textToBe(CART_BADGE, "1"));
         return this;
     }
 
     public InventoryPage addBikeLight() {
-        click(ADD_BIKE_LIGHT);
+        jsClick(ADD_BIKE_LIGHT);
         visible(REMOVE_BIKE_LIGHT);
+        waitUntil(ExpectedConditions.textToBe(CART_BADGE, "2"));
         return this;
     }
 
@@ -69,6 +71,7 @@ public final class InventoryPage extends BasePage {
         jsClick(REMOVE_BACKPACK);
         waitUntil(ExpectedConditions.invisibilityOfElementLocated(REMOVE_BACKPACK));
         visible(ADD_BACKPACK);
+        waitUntil(ExpectedConditions.textToBe(CART_BADGE, "1"));
         return this;
     }
 
@@ -77,8 +80,8 @@ public final class InventoryPage extends BasePage {
     }
 
     public CartPage openCart() {
-        click(CART_LINK);
-        return new CartPage(driver);
+        jsClick(CART_LINK);
+        return new CartPage(driver).assertLoaded();
     }
 
     public LoginPage logout() {
