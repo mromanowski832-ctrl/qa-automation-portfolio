@@ -12,16 +12,16 @@ This repository is designed as a practical engineering portfolio rather than a c
 - Selenium WebDriver 4.48.0
 - TestNG 7.12.0
 - REST Assured 6.0.1
-- Maven
+- Maven Surefire 3.6.0
 - Page Object Model
 - ThreadLocal WebDriver lifecycle
 - Chrome, Edge and Firefox support
 - BrowserStack Automate integration
 - Allure TestNG + REST Assured integration
 - GitHub Actions cross-browser CI
-- Smoke and regression suites
-- Data-driven tests with TestNG DataProvider
-- Failure screenshots and CI artifacts
+- smoke and regression group separation
+- data-driven tests with TestNG DataProvider
+- failure screenshots and CI artifacts
 
 ## Architecture
 
@@ -45,7 +45,7 @@ flowchart LR
 
 ## UI test coverage
 
-The SauceDemo regression suite validates:
+The SauceDemo UI regression validates:
 
 - successful authentication
 - locked-user behavior
@@ -59,7 +59,7 @@ The SauceDemo regression suite validates:
 
 ## API contract coverage
 
-The REST Assured suite validates a public JSON API independently from WebDriver. Current checks include:
+The REST Assured layer validates a public JSON API independently from WebDriver. Current checks include:
 
 - HTTP status contracts
 - JSON content type
@@ -68,27 +68,36 @@ The REST Assured suite validates a public JSON API independently from WebDriver.
 - query-parameter filtering
 - non-empty collection assertions
 
-REST Assured requests and responses are connected to the Allure adapter so API evidence is available in generated test results.
+REST Assured requests and responses are connected to the Allure adapter so API evidence is available in generated results.
 
-## Test strategy
+## Modern test selection with Surefire groups
 
-### Smoke
+Surefire 3.6.0 no longer supports TestNG `suiteXmlFiles`. This project therefore uses explicit TestNG groups instead of deprecated XML-suite selection.
 
-The smoke suite contains the highest-value paths required to prove that the application is usable:
+The group model is intentionally separated by layer:
+
+- `ui-smoke`
+- `ui-regression`
+- `api-smoke`
+- `api-regression`
+
+This prevents an API-only CI job from accidentally starting WebDriver sessions and keeps pipeline responsibilities isolated.
+
+## Run UI smoke tests
+
+```powershell
+mvn clean test -Dtest.groups=ui-smoke
+```
+
+The UI smoke layer covers the highest-value paths:
 
 - successful login
 - cart manipulation
 - complete purchase flow
 
-Run it with:
+## Run UI regression
 
-```powershell
-mvn clean test -DsuiteXmlFile=testng-smoke.xml
-```
-
-### UI regression
-
-The default suite runs the complete browser regression set:
+UI regression is the default Maven test group:
 
 ```powershell
 mvn clean test
@@ -97,15 +106,21 @@ mvn clean test
 Equivalent explicit command:
 
 ```powershell
-mvn clean test -DsuiteXmlFile=testng.xml
+mvn clean test -Dtest.groups=ui-regression
 ```
 
-### API contract
+## Run API tests
 
-Run API tests without starting a browser:
+API regression runs without starting a browser:
 
 ```powershell
-mvn clean test -DsuiteXmlFile=testng-api.xml
+mvn clean test -Dtest.groups=api-regression
+```
+
+API smoke only:
+
+```powershell
+mvn clean test -Dtest.groups=api-smoke
 ```
 
 ## Engineering decisions
@@ -164,10 +179,7 @@ BrowserStack credentials are supplied through environment variables. No BrowserS
 ├── CHANGELOG.md
 ├── LICENSE
 ├── pom.xml
-├── README.md
-├── testng-api.xml
-├── testng-smoke.xml
-└── testng.xml
+└── README.md
 ```
 
 ## Run locally
@@ -176,7 +188,7 @@ Requirements:
 
 - JDK 21
 - Maven 3.6.3+
-- Chrome, Microsoft Edge or Firefox for UI suites
+- Chrome, Microsoft Edge or Firefox for UI groups
 
 Default configuration uses Microsoft Edge:
 
@@ -184,22 +196,22 @@ Default configuration uses Microsoft Edge:
 mvn clean test
 ```
 
-Run in Chrome:
+Run the full UI regression in Chrome:
 
 ```powershell
-mvn clean test -Dbrowser=chrome
+mvn clean test -Dtest.groups=ui-regression -Dbrowser=chrome
 ```
 
-Run headless:
+Run headless Edge:
 
 ```powershell
-mvn clean test -Dbrowser=edge -Dheadless=true
+mvn clean test -Dtest.groups=ui-regression -Dbrowser=edge -Dheadless=true
 ```
 
 Run Firefox:
 
 ```powershell
-mvn clean test -Dbrowser=firefox
+mvn clean test -Dtest.groups=ui-regression -Dbrowser=firefox
 ```
 
 Selenium Manager resolves browser drivers automatically.
@@ -211,7 +223,7 @@ Set credentials as environment variables:
 ```powershell
 $env:BROWSERSTACK_USERNAME="your_username"
 $env:BROWSERSTACK_ACCESS_KEY="your_access_key"
-mvn clean test -Drun.mode=browserstack -Dbrowser=edge -Dheadless=false
+mvn clean test -Dtest.groups=ui-regression -Drun.mode=browserstack -Dbrowser=edge -Dheadless=false
 ```
 
 The framework sends project/build metadata to BrowserStack and marks remote sessions as passed or failed through the BrowserStack executor.
@@ -250,19 +262,19 @@ Runtime configuration is resolved in this order:
 Examples:
 
 ```powershell
-mvn clean test -Dbrowser=chrome -Dheadless=true
-mvn clean test -Drun.mode=browserstack -Dbrowser=edge
-mvn clean test -DsuiteXmlFile=testng-smoke.xml -Dbrowser=firefox -Dheadless=true
+mvn clean test -Dtest.groups=ui-smoke -Dbrowser=chrome -Dheadless=true
+mvn clean test -Dtest.groups=ui-regression -Drun.mode=browserstack -Dbrowser=edge
+mvn clean test -Dtest.groups=api-regression
 ```
 
 ## CI pipeline
 
-GitHub Actions validates two independent layers:
+GitHub Actions validates independent layers:
 
 1. UI regression in a browser matrix:
    - Chrome
    - Firefox
-2. API contract tests with REST Assured
+2. API contract regression with REST Assured
 
 The UI jobs run in parallel and use Java 21, Maven and headless browsers. TestNG/Surefire reports and Allure results are retained as workflow artifacts. Failure screenshots are uploaded separately when a UI job fails.
 
@@ -277,8 +289,8 @@ The UI jobs run in parallel and use Java 21, Maven and headless browsers. TestNG
 - explicit page-load assertions
 - stable selectors where the application exposes IDs or `data-test`
 - screenshot evidence on UI failures
-- dedicated smoke and regression suites
-- separate browser and API validation layers
+- isolated UI and API test groups
+- separate smoke and regression layers
 - CI-ready execution
 - optional BrowserStack cloud-grid execution
 
