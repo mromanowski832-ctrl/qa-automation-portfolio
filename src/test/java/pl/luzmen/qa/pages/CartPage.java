@@ -35,7 +35,7 @@ public final class CartPage extends BasePage {
     }
 
     public CheckoutStepOnePage checkout() {
-        click(CHECKOUT_BUTTON);
+        jsClick(CHECKOUT_BUTTON);
         return new CheckoutStepOnePage(driver);
     }
 }
