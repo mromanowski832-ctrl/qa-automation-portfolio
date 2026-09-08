@@ -11,7 +11,10 @@ import java.util.List;
 
 public final class InventoryTests extends BaseTest {
 
-    @Test(description = "Product prices are sorted from low to high")
+    @Test(
+            groups = {"regression"},
+            description = "Product prices are sorted from low to high"
+    )
     public void productsCanBeSortedLowToHigh() {
         loginAsStandardUser();
 
@@ -26,7 +29,10 @@ public final class InventoryTests extends BaseTest {
         Assert.assertEquals(actual, expected, "Products are not sorted by ascending price.");
     }
 
-    @Test(description = "Cart badge accurately reflects add and remove operations")
+    @Test(
+            groups = {"smoke", "regression"},
+            description = "Cart badge accurately reflects add and remove operations"
+    )
     public void cartBadgeTracksProductChanges() {
         loginAsStandardUser();
 
