@@ -35,7 +35,7 @@ jobs:
       - name: Run UI regression
         run: >-
           mvn -B -ntp clean test
-          -DsuiteXmlFile=testng.xml
+          -Dtest.groups=ui-regression
           -Dbrowser=${{ matrix.browser }}
           -Dheadless=true
           -Drun.mode=local
@@ -47,7 +47,6 @@ jobs:
           name: ui-test-results-${{ matrix.browser }}
           path: |
             target/surefire-reports/
-            test-output/
             target/allure-results/
           if-no-files-found: ignore
           retention-days: 14
@@ -78,7 +77,7 @@ jobs:
           cache: maven
 
       - name: Run API contract suite
-        run: mvn -B -ntp clean test -DsuiteXmlFile=testng-api.xml
+        run: mvn -B -ntp clean test -Dtest.groups=api-regression
 
       - name: Upload API reports and Allure results
         if: always()
@@ -87,7 +86,6 @@ jobs:
           name: api-test-results
           path: |
             target/surefire-reports/
-            test-output/
             target/allure-results/
           if-no-files-found: ignore
           retention-days: 14
