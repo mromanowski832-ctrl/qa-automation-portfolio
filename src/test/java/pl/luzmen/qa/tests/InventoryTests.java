@@ -12,7 +12,7 @@ import java.util.List;
 public final class InventoryTests extends BaseTest {
 
     @Test(
-            groups = {"regression"},
+            groups = {"ui", "ui-regression"},
             description = "Product prices are sorted from low to high"
     )
     public void productsCanBeSortedLowToHigh() {
@@ -30,7 +30,7 @@ public final class InventoryTests extends BaseTest {
     }
 
     @Test(
-            groups = {"smoke", "regression"},
+            groups = {"ui", "ui-smoke", "ui-regression"},
             description = "Cart badge accurately reflects add and remove operations"
     )
     public void cartBadgeTracksProductChanges() {
