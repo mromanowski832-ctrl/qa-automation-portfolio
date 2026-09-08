@@ -2,7 +2,7 @@ name: QA Automation
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "portfolio-v2" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -11,10 +11,15 @@ permissions:
   contents: read
 
 jobs:
-  regression:
-    name: Selenium + TestNG regression
+  ui-regression:
+    name: UI regression - ${{ matrix.browser }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [ chrome, firefox ]
 
     steps:
       - name: Checkout repository
@@ -27,17 +32,23 @@ jobs:
           java-version: "21"
           cache: maven
 
-      - name: Run UI regression in headless Chrome
-        run: mvn -B -ntp clean test -Dbrowser=chrome -Dheadless=true -Drun.mode=local
+      - name: Run UI regression
+        run: >-
+          mvn -B -ntp clean test
+          -DsuiteXmlFile=testng.xml
+          -Dbrowser=${{ matrix.browser }}
+          -Dheadless=true
+          -Drun.mode=local
 
-      - name: Upload TestNG and Surefire reports
+      - name: Upload UI reports and Allure results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: qa-test-reports
+          name: ui-test-results-${{ matrix.browser }}
           path: |
             target/surefire-reports/
             test-output/
+            target/allure-results/
           if-no-files-found: ignore
           retention-days: 14
 
@@ -45,7 +56,38 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: failure-screenshots
+          name: failure-screenshots-${{ matrix.browser }}
           path: screenshots/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  api-contract:
+    name: API contract - REST Assured
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Run API contract suite
+        run: mvn -B -ntp clean test -DsuiteXmlFile=testng-api.xml
+
+      - name: Upload API reports and Allure results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-test-results
+          path: |
+            target/surefire-reports/
+            test-output/
+            target/allure-results/
           if-no-files-found: ignore
           retention-days: 14
