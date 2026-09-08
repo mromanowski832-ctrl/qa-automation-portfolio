@@ -66,7 +66,8 @@ public final class InventoryPage extends BasePage {
     }
 
     public InventoryPage removeBackpack() {
-        click(REMOVE_BACKPACK);
+        jsClick(REMOVE_BACKPACK);
+        waitUntil(ExpectedConditions.invisibilityOfElementLocated(REMOVE_BACKPACK));
         visible(ADD_BACKPACK);
         return this;
     }
@@ -82,7 +83,7 @@ public final class InventoryPage extends BasePage {
 
     public LoginPage logout() {
         click(MENU_BUTTON);
-        click(LOGOUT_LINK);
+        jsClick(LOGOUT_LINK);
         return new LoginPage(driver).assertLoaded();
     }
 }
