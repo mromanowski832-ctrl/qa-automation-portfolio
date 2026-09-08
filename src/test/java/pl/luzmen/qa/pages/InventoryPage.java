@@ -22,6 +22,7 @@ public final class InventoryPage extends BasePage {
     private static final By ADD_BACKPACK = By.id("add-to-cart-sauce-labs-backpack");
     private static final By REMOVE_BACKPACK = By.id("remove-sauce-labs-backpack");
     private static final By ADD_BIKE_LIGHT = By.id("add-to-cart-sauce-labs-bike-light");
+    private static final By REMOVE_BIKE_LIGHT = By.id("remove-sauce-labs-bike-light");
 
     public InventoryPage(WebDriver driver) {
         super(driver);
@@ -29,9 +30,7 @@ public final class InventoryPage extends BasePage {
 
     public InventoryPage assertLoaded() {
         waitUntil(ExpectedConditions.urlContains("inventory"));
-        if (!"Products".equals(text(TITLE))) {
-            throw new IllegalStateException("Inventory page did not load correctly.");
-        }
+        waitUntil(ExpectedConditions.textToBe(TITLE, "Products"));
         return this;
     }
 
@@ -41,6 +40,7 @@ public final class InventoryPage extends BasePage {
 
     public InventoryPage sortLowToHigh() {
         selectByValue(SORT, "lohi");
+        waitUntil(ExpectedConditions.attributeToBe(SORT, "value", "lohi"));
         return this;
     }
 
@@ -55,16 +55,19 @@ public final class InventoryPage extends BasePage {
 
     public InventoryPage addBackpack() {
         click(ADD_BACKPACK);
+        visible(REMOVE_BACKPACK);
         return this;
     }
 
     public InventoryPage addBikeLight() {
         click(ADD_BIKE_LIGHT);
+        visible(REMOVE_BIKE_LIGHT);
         return this;
     }
 
     public InventoryPage removeBackpack() {
         click(REMOVE_BACKPACK);
+        visible(ADD_BACKPACK);
         return this;
     }
 
@@ -80,6 +83,6 @@ public final class InventoryPage extends BasePage {
     public LoginPage logout() {
         click(MENU_BUTTON);
         click(LOGOUT_LINK);
-        return new LoginPage(driver);
+        return new LoginPage(driver).assertLoaded();
     }
 }
