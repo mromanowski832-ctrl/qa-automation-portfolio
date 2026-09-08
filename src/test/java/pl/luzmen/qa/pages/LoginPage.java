@@ -4,6 +4,7 @@ import pl.luzmen.qa.config.TestConfig;
 import pl.luzmen.qa.core.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public final class LoginPage extends BasePage {
 
@@ -18,6 +19,11 @@ public final class LoginPage extends BasePage {
 
     public LoginPage open() {
         driver.get(TestConfig.baseUrl());
+        return assertLoaded();
+    }
+
+    public LoginPage assertLoaded() {
+        waitUntil(ExpectedConditions.urlToBe(TestConfig.baseUrl()));
         visible(LOGIN_BUTTON);
         return this;
     }
