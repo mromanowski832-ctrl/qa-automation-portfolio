@@ -2,6 +2,7 @@ package pl.luzmen.qa.core;
 
 import pl.luzmen.qa.config.TestConfig;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -44,7 +45,15 @@ public abstract class BasePage {
     }
 
     protected void click(By locator) {
-        clickable(locator).click();
+        WebElement element = clickable(locator);
+        scrollIntoView(element);
+        element.click();
+    }
+
+    protected void jsClick(By locator) {
+        WebElement element = visible(locator);
+        scrollIntoView(element);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
     }
 
     protected void type(By locator, String value) {
@@ -71,5 +80,12 @@ public abstract class BasePage {
 
     protected void waitUntil(ExpectedCondition<?> condition) {
         wait.until(condition);
+    }
+
+    private void scrollIntoView(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center', inline:'center'});",
+                element
+        );
     }
 }
