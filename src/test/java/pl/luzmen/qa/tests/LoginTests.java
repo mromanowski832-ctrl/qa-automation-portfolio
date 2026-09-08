@@ -18,7 +18,7 @@ public final class LoginTests extends BaseTest {
     }
 
     @Test(
-            groups = {"smoke", "regression"},
+            groups = {"ui", "ui-smoke", "ui-regression"},
             description = "Valid user can authenticate and reach the inventory page"
     )
     public void validUserCanLogin() {
@@ -31,7 +31,7 @@ public final class LoginTests extends BaseTest {
     }
 
     @Test(
-            groups = {"regression"},
+            groups = {"ui", "ui-regression"},
             description = "Locked user receives a clear access-denied message"
     )
     public void lockedUserCannotLogin() {
@@ -47,7 +47,7 @@ public final class LoginTests extends BaseTest {
 
     @Test(
             dataProvider = "invalidCredentials",
-            groups = {"regression"},
+            groups = {"ui", "ui-regression"},
             description = "Invalid credentials are rejected"
     )
     public void invalidCredentialsAreRejected(String username, String password) {
@@ -62,7 +62,7 @@ public final class LoginTests extends BaseTest {
     }
 
     @Test(
-            groups = {"regression"},
+            groups = {"ui", "ui-regression"},
             description = "Authenticated user can log out"
     )
     public void userCanLogout() {
