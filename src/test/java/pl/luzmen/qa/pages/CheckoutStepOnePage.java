@@ -2,7 +2,9 @@ package pl.luzmen.qa.pages;
 
 import pl.luzmen.qa.core.BasePage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public final class CheckoutStepOnePage extends BasePage {
@@ -24,10 +26,30 @@ public final class CheckoutStepOnePage extends BasePage {
     }
 
     public CheckoutStepTwoPage continueWith(String firstName, String lastName, String postalCode) {
-        type(FIRST_NAME, firstName);
-        type(LAST_NAME, lastName);
-        type(POSTAL_CODE, postalCode);
-        click(CONTINUE);
+        setReactInputValue(FIRST_NAME, firstName);
+        setReactInputValue(LAST_NAME, lastName);
+        setReactInputValue(POSTAL_CODE, postalCode);
+
+        jsClick(CONTINUE);
+        waitUntil(ExpectedConditions.urlContains("checkout-step-two"));
+
         return new CheckoutStepTwoPage(driver);
+    }
+
+    private void setReactInputValue(By locator, String value) {
+        WebElement element = visible(locator);
+
+        ((JavascriptExecutor) driver).executeScript(
+                "const input = arguments[0];"
+                        + "const value = arguments[1];"
+                        + "const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;"
+                        + "setter.call(input, value);"
+                        + "input.dispatchEvent(new Event('input', { bubbles: true }));"
+                        + "input.dispatchEvent(new Event('change', { bubbles: true }));",
+                element,
+                value
+        );
+
+        waitUntil(ExpectedConditions.attributeToBe(locator, "value", value));
     }
 }
