@@ -26,7 +26,8 @@ public final class CheckoutStepTwoPage extends BasePage {
     }
 
     public CheckoutCompletePage finish() {
-        click(FINISH);
+        jsClick(FINISH);
+        waitUntil(ExpectedConditions.urlContains("checkout-complete"));
         return new CheckoutCompletePage(driver);
     }
 }
