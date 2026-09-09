@@ -6,6 +6,60 @@ Production-style QA automation portfolio covering browser UI regression, API con
 
 This repository is designed as a practical engineering portfolio rather than a collection of isolated WebDriver examples. The framework separates test intent from browser mechanics, supports local and BrowserStack execution, generates failure evidence, produces Allure-compatible results and runs automated validation in GitHub Actions.
 
+## Portfolio case studies — verified implementation
+
+**Michał Romanowski · QA automation portfolio**
+
+This is one framework with three engineering case studies, not three independent commercial projects. The application under test is SauceDemo; the API target is JSONPlaceholder. Both are demonstration services.
+
+### 1. Commerce Journey — cross-browser purchase validation
+
+**Problem:** a purchase journey must remain testable across browsers, including the customer-details form and final confirmation.
+
+**Implementation:** Selenium page objects drive login, adding a backpack, cart inspection, customer details, order overview and purchase completion. Assertions check the cart badge, item count, product identity, displayed total and final confirmation.
+
+**Evidence:** [PurchaseFlowTests.java](src/test/java/pl/luzmen/qa/tests/PurchaseFlowTests.java) · [page objects](src/test/java/pl/luzmen/qa/pages) · [Chrome and Firefox CI](.github/workflows/qa.yml).
+
+**Boundary:** the current test checks that a total is displayed; it does not yet prove pricing arithmetic, real payments or production conversion rates.
+
+### 2. API Contract Lab — independent HTTP validation
+
+**Problem:** API checks should run independently of browser setup and identify response-contract regressions.
+
+**Implementation:** two REST Assured tests validate a single post and a filtered posts collection. Checks cover HTTP 200, JSON content type, known identifiers, required non-null fields and a non-empty collection. Requests and responses are connected to Allure.
+
+**Evidence:** [ApiContractTests.java](src/test/java/pl/luzmen/qa/api/ApiContractTests.java).
+
+**Boundary:** this is a small public demo-API suite, not a complete API certification or security audit. Filtering currently checks the first returned item's user ID, not every item.
+
+### 3. CI Evidence Pipeline — reproducible review
+
+**Problem:** a recruiter needs executable evidence, not only a technology list.
+
+**Implementation:** GitHub Actions runs two UI jobs (Chrome and Firefox) and a separate API job. Reports and Allure results are uploaded even when tests fail; UI failure screenshots are uploaded on failure. Artifact retention is 14 days.
+
+**Evidence:** [workflow source](.github/workflows/qa.yml) · [all workflow runs](https://github.com/mromanowski832-ctrl/qa-automation-portfolio/actions).
+
+### Verified baseline
+
+Run [#42](https://github.com/mromanowski832-ctrl/qa-automation-portfolio/actions/runs/34279544203), completed **8 September 2026**, validated commit `fb02db279c8016522aabc83a81dcaecc6fafedd7`:
+
+| CI job | Recorded conclusion |
+| --- | --- |
+| UI regression — Chrome | Success |
+| UI regression — Firefox | Success |
+| API contract — REST Assured | Success |
+
+This is historical evidence for that exact commit, not a promise that future runs will pass. Earlier failed runs remain visible. Three successful jobs do not mean three tests; see the run reports for individual test counts. BrowserStack and Edge execution are supported by the framework but are not verified by this run.
+
+### LinkedIn Featured description
+
+**QA Automation Portfolio | Selenium, Java, REST Assured & GitHub Actions**
+
+Personal engineering project demonstrating an end-to-end shopping journey, independent API contract checks, and cross-browser CI in Chrome and Firefox. Built with Page Object Model, TestNG groups, Allure integration and failure evidence. Includes source code and a linked successful CI baseline. Uses public demonstration services; not presented as commercial client work.
+
+---
+
 ## Recruiter snapshot
 
 - Java 21
